@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
@@ -11,14 +11,32 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    try {
-      const res = await api.post("/auth/login/", { email, password });
-      localStorage.setItem("token", res.data.access);
-      router.push("/health");
-    } catch {
-      alert("Invalid credentials");
+      try {
+        console.log("Sending:", { email, password }); // 🔥 ADD THIS
+
+        const res = await api.post("/auth/login/", {
+          email: email.trim(),
+          password: password.trim(),
+        });
+
+        console.log("Response:", res.data); // 🔥 ADD THIS
+
+        localStorage.setItem("token", res.data.access);
+        router.push("/dashboard");
+
+      } catch (err: any) {
+        console.log("ERROR:", err.response?.data); // 🔥 VERY IMPORTANT
+        alert(err.response?.data?.error || "Login failed");
+      }
+    };
+
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      router.push("/dashboard");
     }
-  };
+  }, []);
 
   return (
     <div className="auth-container">
@@ -42,12 +60,6 @@ export default function LoginPage() {
           Login
         </button>
 
-        <p style={{ marginTop: 10 }}>
-          Don’t have account?{" "}
-          <span className="link" onClick={() => router.push("/register")}>
-            Register
-          </span>
-        </p>
       </div>
     </div>
   );
