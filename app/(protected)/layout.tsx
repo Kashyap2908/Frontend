@@ -1,72 +1,37 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth.store';
+import { AppShell } from '@/components/layout/AppShell';
+import { Spinner } from '@/components/ui/Spinner';
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [isReady, setIsReady] = useState(false);
+  const { isAuthenticated, isLoading, initialize } = useAuthStore();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    initialize();
+  }, [initialize]);
 
-    if (!token) {
-      router.replace("/login");
-    } else {
-      setIsReady(true);
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/login');
     }
-  }, []);
+  }, [isAuthenticated, isLoading, router]);
 
-  if (!isReady) return null;
-
-  return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      
-      {/* 🔷 SIDEBAR */}
-      <div
-        style={{
-          width: "220px",
-          background: "#1e293b",
-          color: "white",
-          padding: "20px",
-        }}
-      >
-        <h2>ERP</h2>
-
-        <p onClick={() => router.push("/dashboard")} style={{ cursor: "pointer" }}>
-          Dashboard
-        </p>
-
-        <p style={{ cursor: "pointer" }}>Products</p>
-        <p style={{ cursor: "pointer" }}>Billing</p>
-        <p style={{ cursor: "pointer" }}>Reports</p>
-
-        <button
-          style={{
-            marginTop: "20px",
-            padding: "8px",
-            background: "#ef4444",
-            border: "none",
-            color: "white",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            localStorage.removeItem("token");
-            router.replace("/login");
-          }}
-        >
-          Logout
-        </button>
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Spinner size="lg" />
       </div>
+    );
+  }
 
-      {/* 🔷 MAIN CONTENT */}
-      <div style={{ flex: 1, padding: "20px" }}>
-        {children}
-      </div>
-    </div>
-  );
+  if (!isAuthenticated) {
+    // Middleware handles the redirect; render nothing during the transition
+    return null;
+  }
+
+  return <AppShell>{children}</AppShell>;
 }
