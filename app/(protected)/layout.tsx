@@ -22,14 +22,33 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Spinner size="lg" />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-3">
+        <div className="flex items-center gap-2.5 mb-2">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-600/30">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+          </div>
+          <span className="text-base font-bold text-gray-900 tracking-tight">Neuro Stock</span>
+        </div>
+        <Spinner size="md" />
+        <p className="text-sm text-gray-400">Loading your workspace&hellip;</p>
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    // Middleware handles the redirect; render nothing during the transition
     return null;
   }
 

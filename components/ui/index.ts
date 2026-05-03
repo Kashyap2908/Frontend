@@ -5,3 +5,6 @@ export { Modal } from './Modal';
 export { Table } from './Table';
 export { Spinner } from './Spinner';
 export { Skeleton, SkeletonCard } from './Skeleton';
+export { Badge } from './Badge';
+export { Select } from './Select';
+export { Pagination } from './Pagination';
